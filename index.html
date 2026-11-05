@@ -146,7 +146,7 @@
     <!-- 🟢 系統主畫面 (預設隱藏，登入後顯示) -->
     <div id="mainApp" style="display: none">
       <nav class="navbar navbar-dark bg-dark px-4">
-        <span class="navbar-brand">🏢 會議室管理系統</span>
+        <span class="navbar-brand">🏢 李氏全人健康中心</span>
         <div>
           <span id="currentUserLabel" class="text-white me-3"></span>
           <button class="btn btn-outline-light btn-sm" onclick="logout()">
@@ -583,7 +583,7 @@
           unit: document.getElementById("unit").value,
           title: document.getElementById("title").value,
           phone: document.getElementById("phone").value,
-          notifyEmail: "leeseducationcenter@gmail.com", // 直接寫入固定的通知信箱
+          notifyEmail: "leeseducationcenter@gmail.com,sunyanzi948c@gmail.com", // 直接寫入固定的通知信箱
         };
 
         const result = await callGAS(data);
