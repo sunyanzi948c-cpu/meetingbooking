@@ -1,0 +1,608 @@
+<!doctype html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>會議室預約管理系統</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet" />
+    <style>
+      body {
+        background-color: #f4f7f6;
+        font-family: "Microsoft JhengHei", sans-serif;
+      }
+      .navbar {
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .header-bg {
+        background-color: #34495e;
+        color: white;
+        padding: 1.5rem 0;
+        margin-bottom: 2rem;
+      }
+      .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+      .timeline-container {
+        position: relative;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow-x: auto;
+        margin-bottom: 20px;
+      }
+      .timeline-header {
+        display: flex;
+        border-bottom: 1px solid #eee;
+        background: #f8f9fa;
+      }
+      .time-slot {
+        min-width: 100px;
+        flex: 1;
+        text-align: left;
+        padding-left: 8px;
+        font-size: 12px;
+        border-right: 1px solid rgba(0, 0, 0, 0.05);
+        color: #7f8c8d;
+        line-height: 30px;
+      }
+      .room-row {
+        position: relative;
+        height: 60px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+        background-image: linear-gradient(
+          to right,
+          rgba(0, 0, 0, 0.03) 1px,
+          transparent 1px
+        );
+        background-size: 100px 100%;
+      }
+      .room-name-label {
+        min-width: 150px;
+        padding-left: 15px;
+        font-weight: bold;
+        background: #fff;
+        z-index: 2;
+        border-right: 3px solid #3498db;
+      }
+      .booking-bar {
+        position: absolute;
+        height: 42px;
+        background: #3498db;
+        color: white;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        z-index: 1;
+        overflow: hidden;
+        white-space: nowrap;
+        padding: 0 8px;
+        transition: 0.2s;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .booking-bar:hover {
+        filter: brightness(1.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      /* 強制登入畫面樣式 */
+      #fullLoginScreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #eceff1;
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      /* 預設隱藏管理者區塊 */
+      .admin-only {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 🟢 強制登入畫面 -->
+    <div id="fullLoginScreen">
+      <div class="card p-4 shadow-lg" style="width: 350px">
+        <h4 class="text-center mb-4">🏢 會議室管理系統</h4>
+        <div class="mb-3">
+          <input
+            type="text"
+            id="loginUser"
+            class="form-control"
+            placeholder="請輸入帳號" />
+        </div>
+        <div class="mb-4">
+          <input
+            type="password"
+            id="loginPass"
+            class="form-control"
+            placeholder="請輸入密碼" />
+        </div>
+        <button
+          id="loginBtn"
+          class="btn btn-primary w-100"
+          onclick="performLogin()">
+          系統登入
+        </button>
+        <div
+          id="loginMsg"
+          class="text-danger mt-2 text-center"
+          style="display: none"></div>
+      </div>
+    </div>
+
+    <!-- 🟢 系統主畫面 (預設隱藏，登入後顯示) -->
+    <div id="mainApp" style="display: none">
+      <nav class="navbar navbar-dark bg-dark px-4">
+        <span class="navbar-brand">🏢 會議室管理系統</span>
+        <div>
+          <span id="currentUserLabel" class="text-white me-3"></span>
+          <button class="btn btn-outline-light btn-sm" onclick="logout()">
+            登出
+          </button>
+        </div>
+      </nav>
+
+      <div class="header-bg text-center">
+        <h2>會議室預約排程看板</h2>
+        <p class="mb-0">視覺化管理與審核系統</p>
+      </div>
+
+      <div class="container-fluid px-4">
+        <div class="row">
+          <!-- 左側：申請表單 -->
+          <div class="col-lg-3 col-md-4 mb-4">
+            <div class="card p-4">
+              <h5 class="mb-3">🆕 提交預約申請</h5>
+              <form id="bookingForm">
+                <div class="mb-3">
+                  <label class="form-label">選擇會議室</label>
+                  <select class="form-select" id="room" required></select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">日期</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="date"
+                    required
+                    onchange="loadBookings()" />
+                </div>
+                <div class="row mb-3">
+                  <div class="col">
+                    <label class="form-label">開始時間</label>
+                    <input
+                      type="time"
+                      class="form-control"
+                      id="startTime"
+                      required />
+                  </div>
+                  <div class="col">
+                    <label class="form-label">結束時間</label>
+                    <input
+                      type="time"
+                      class="form-control"
+                      id="endTime"
+                      required />
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">申請人資訊</label>
+                  <div class="row g-2 mb-2">
+                    <div class="col-6">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="unit"
+                        placeholder="單位"
+                        required />
+                    </div>
+                    <div class="col-6">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="title"
+                        placeholder="級職"
+                        required />
+                    </div>
+                  </div>
+                  <div class="row g-2">
+                    <div class="col-6">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="user"
+                        placeholder="姓名"
+                        required />
+                    </div>
+                    <div class="col-6">
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="phone"
+                        placeholder="分機"
+                        required />
+                    </div>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">通知信箱 (選填)</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="notifyEmail"
+                    placeholder="要額外通知的 Gmail" />
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                  送出預約申請
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- 右側：排程看板與管理區 -->
+          <div class="col-lg-9 col-md-8">
+            <div class="card p-4 mb-4">
+              <h5>📅 已核准排程 (08:00 - 20:00)</h5>
+              <div class="timeline-container">
+                <div class="timeline-header" id="timelineHeader"></div>
+                <div id="roomRows"></div>
+              </div>
+            </div>
+
+            <!-- 管理者專屬區塊 (自動切換顯示) -->
+            <div id="adminSections" class="admin-only">
+              <div class="card p-4 border-warning mb-4">
+                <h5 class="text-warning mb-4">⚙️ 系統設定</h5>
+                <div class="row">
+                  <div class="col-md-6 border-end">
+                    <h6>🏢 會議室名單</h6>
+                    <div class="input-group mb-2">
+                      <input
+                        type="text"
+                        id="newRoomName"
+                        class="form-control"
+                        placeholder="名稱" />
+                      <button class="btn btn-success" onclick="addRoom()">
+                        新增
+                      </button>
+                    </div>
+                    <div id="roomAdminList" class="list-group"></div>
+                  </div>
+                  <div class="col-md-6">
+                    <!-- 密碼修改已移除，建議直接由 Google Sheets 後台修改 -->
+                    <p class="text-muted small mt-2">
+                      ※ 若需修改密碼或新增帳號，請至 Google Sheets 的 Users
+                      工作表處理。
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card p-4 border-warning">
+                <h5 class="text-warning mb-4">⏳ 待處理申請</h5>
+                <div id="approvalList"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ⚠️ 替換為你的 Google Apps Script 網頁應用程式 URL
+      const GAS_URL =
+        "https://script.google.com/macros/s/AKfycbzr7zXLbo8linKfZUy4SMrpWQ5QrZWYErtxjomYSv0Ht7_1ErmgsDUFOXkABZtrMJVKiQ/exec";
+
+      const START_HOUR = 8,
+        END_HOUR = 20,
+        PX = 100;
+      let IS_ADMIN = false;
+
+      window.onload = function () {
+        checkLoginStatus();
+      };
+
+      // --- 登入與權限控制 ---
+      function checkLoginStatus() {
+        const token = localStorage.getItem("auth_token");
+        const username = localStorage.getItem("username");
+
+        if (token && username) {
+          // 已登入狀態，顯示主系統並初始化
+          document.getElementById("fullLoginScreen").style.display = "none";
+          document.getElementById("mainApp").style.display = "block";
+
+          IS_ADMIN = username === "admin"; // 判斷是否為管理者
+          document.getElementById("currentUserLabel").innerText = IS_ADMIN
+            ? "👨‍💼 管理者模式 (admin)"
+            : `👤 使用者 (${username})`;
+
+          if (IS_ADMIN) {
+            document
+              .getElementById("adminSections")
+              .classList.remove("admin-only");
+          } else {
+            document
+              .getElementById("adminSections")
+              .classList.add("admin-only");
+            document.getElementById("user").value = username; // 自動帶入申請人姓名
+          }
+
+          initSystem();
+        } else {
+          // 未登入狀態，顯示登入畫面
+          document.getElementById("fullLoginScreen").style.display = "flex";
+          document.getElementById("mainApp").style.display = "none";
+        }
+      }
+
+      async function performLogin() {
+        const user = document.getElementById("loginUser").value.trim();
+        const pass = document.getElementById("loginPass").value.trim();
+        const btn = document.getElementById("loginBtn");
+        const msg = document.getElementById("loginMsg");
+
+        if (!user || !pass) return;
+
+        btn.disabled = true;
+        btn.innerText = "登入驗證中...";
+        msg.style.display = "none";
+
+        const result = await callGAS({
+          action: "login",
+          username: user,
+          password: pass,
+        });
+
+        if (result.status === "success") {
+          localStorage.setItem("auth_token", result.token);
+          localStorage.setItem("username", user);
+          checkLoginStatus(); // 刷新 UI 進入系統
+        } else {
+          msg.innerText = "帳號或密碼錯誤";
+          msg.style.display = "block";
+        }
+
+        btn.disabled = false;
+        btn.innerText = "系統登入";
+      }
+
+      function logout() {
+        localStorage.clear();
+        document.getElementById("loginUser").value = "";
+        document.getElementById("loginPass").value = "";
+        checkLoginStatus(); // 刷新 UI 回到登入頁
+      }
+
+      // --- 系統初始化與 GAS API 呼叫 ---
+      function initSystem() {
+        const today = new Date().toISOString().split("T")[0];
+        document.getElementById("date").value = today;
+        document.getElementById("date").setAttribute("min", today);
+        initTimeline();
+        updateRoomDropdown();
+        loadBookings();
+      }
+
+      async function callGAS(data) {
+        try {
+          const res = await fetch(GAS_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(data),
+          });
+          return await res.json();
+        } catch (e) {
+          console.error("API Error:", e);
+          return { status: "error", message: "網路連線異常" };
+        }
+      }
+
+      // --- 會議室管理 ---
+      async function updateRoomDropdown() {
+        const result = await callGAS({ action: "get_rooms" });
+        const rooms = result.data || [];
+        document.getElementById("room").innerHTML = rooms
+          .map((r) => `<option value="${r}">${r}</option>`)
+          .join("");
+
+        if (IS_ADMIN) {
+          document.getElementById("roomAdminList").innerHTML = rooms
+            .map(
+              (r) =>
+                `<div class="list-group-item d-flex justify-content-between align-items-center">${r} 
+                 <button class="btn btn-sm btn-outline-danger" onclick="delRoom('${r}')">刪除</button></div>`,
+            )
+            .join("");
+        }
+      }
+
+      async function addRoom() {
+        const name = document.getElementById("newRoomName").value;
+        if (!name) return;
+        await callGAS({
+          action: "add_room",
+          name: name,
+          token: localStorage.getItem("auth_token"),
+        });
+        updateRoomDropdown();
+        document.getElementById("newRoomName").value = "";
+      }
+
+      async function delRoom(name) {
+        if (confirm(`確定刪除 ${name} 嗎？`)) {
+          await callGAS({
+            action: "delete_room",
+            name: name,
+            token: localStorage.getItem("auth_token"),
+          });
+          updateRoomDropdown();
+        }
+      }
+
+      // --- 預約排程看板 ---
+      function initTimeline() {
+        const h = document.getElementById("timelineHeader");
+        h.innerHTML = '<div style="min-width:150px"></div>';
+        for (let i = START_HOUR; i < END_HOUR; i++) {
+          h.innerHTML += `<div class="time-slot" style="min-width:${PX}px">${i}:00</div>`;
+        }
+      }
+
+      async function loadBookings() {
+        const date = document.getElementById("date").value;
+        const result = await callGAS({
+          action: "get_bookings_and_rooms",
+          date: date,
+        });
+        const bookings = result.bookings || [];
+        const rooms = result.rooms || [];
+
+        const approved = bookings.filter((item) => item.status === "已核准");
+        const rowContainer = document.getElementById("roomRows");
+        rowContainer.innerHTML = "";
+
+        rooms.forEach((roomName) => {
+          const row = document.createElement("div");
+          row.className = "room-row";
+          row.innerHTML = `<div class="room-name-label">${roomName}</div>`;
+
+          approved
+            .filter((b) => b.room_name === roomName)
+            .forEach((booking) => {
+              const bar = document.createElement("div");
+              bar.className = "booking-bar";
+              const s = parseTime(booking.start_time),
+                e = parseTime(booking.end_time);
+
+              bar.style.left = `${(s - START_HOUR) * PX + 150}px`;
+              bar.style.width = `${(e - s) * PX}px`;
+              bar.innerText = `${booking.user_name} (${booking.start_time}-${booking.end_time})`;
+              bar.title = `單位：${booking.unit}\n級職：${booking.title}\n姓名：${booking.user_name}\n分機：${booking.phone}`;
+
+              if (IS_ADMIN) {
+                bar.style.cursor = "pointer";
+                bar.onclick = () =>
+                  deleteBooking(booking.id, booking.user_name);
+              }
+              row.appendChild(bar);
+            });
+          rowContainer.appendChild(row);
+        });
+
+        if (IS_ADMIN)
+          renderApproval(bookings.filter((item) => item.status === "待審核"));
+      }
+
+      async function deleteBooking(id, name) {
+        if (confirm(`確定刪除 ${name} 的已核准預約？`)) {
+          await callGAS({
+            action: "delete_booking",
+            id: id,
+            token: localStorage.getItem("auth_token"),
+          });
+          loadBookings();
+        }
+      }
+
+      // --- 審核功能 ---
+      function renderApproval(pendings) {
+        const list = document.getElementById("approvalList");
+        list.innerHTML = pendings.length
+          ? ""
+          : '<p class="text-muted">暫無待審核申請</p>';
+
+        pendings.forEach((item) => {
+          const div = document.createElement("div");
+          div.className =
+            "p-3 border rounded mb-2 d-flex justify-content-between align-items-center shadow-sm";
+          div.innerHTML = `
+                <div>
+                  <span class="badge bg-warning text-dark mb-1">${item.room_name} (${item.booking_date})</span>
+                  <h6 class="mb-0">${item.start_time} - ${item.end_time}</h6>
+                  <small class="text-primary">${item.unit} ${item.title} ${item.user_name}</small> | <small class="text-danger">分機：${item.phone}</small>
+                </div>
+                <div>
+                  <button class="btn btn-success btn-sm me-1" onclick="handleApproval('${item.id}', '已核准')">准許</button>
+                  <button class="btn btn-outline-danger btn-sm" onclick="handleApproval('${item.id}', '已退回')">拒絕</button>
+                </div>`;
+          list.appendChild(div);
+        });
+      }
+
+      async function handleApproval(id, statusAction) {
+        const res = await callGAS({
+          action: "approve_booking",
+          id: id,
+          status: statusAction,
+          token: localStorage.getItem("auth_token"),
+        });
+        if (res.status === "error") alert(res.message);
+        loadBookings();
+      }
+
+      // --- 提交申請 ---
+      document.getElementById("bookingForm").onsubmit = async (e) => {
+        e.preventDefault();
+        if (
+          document.getElementById("startTime").value >=
+          document.getElementById("endTime").value
+        ) {
+          alert("結束時間必須晚於開始時間");
+          return;
+        }
+
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.innerText = "送出中...";
+
+        const data = {
+          action: "add_booking",
+          room: document.getElementById("room").value,
+          date: document.getElementById("date").value,
+          startTime: document.getElementById("startTime").value,
+          endTime: document.getElementById("endTime").value,
+          user: document.getElementById("user").value,
+          unit: document.getElementById("unit").value,
+          title: document.getElementById("title").value,
+          phone: document.getElementById("phone").value,
+          notifyEmail: document.getElementById("notifyEmail").value,
+        };
+
+        const result = await callGAS(data);
+        alert(result.message);
+
+        if (result.status === "success") {
+          e.target.reset();
+          const today = new Date().toISOString().split("T")[0];
+          document.getElementById("date").value = today;
+          if (!IS_ADMIN)
+            document.getElementById("user").value =
+              localStorage.getItem("username"); // 恢復預設姓名
+        }
+
+        submitBtn.disabled = false;
+        submitBtn.innerText = "送出預約申請";
+        loadBookings();
+      };
+
+      function parseTime(t) {
+        const [h, m] = t.split(":").map(Number);
+        return h + m / 60;
+      }
+    </script>
+  </body>
+</html>
