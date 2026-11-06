@@ -290,29 +290,11 @@
 
             <div id="adminSections" class="admin-only">
               <div class="card p-4 border-warning mb-4">
-                <h5 class="text-warning mb-4">⚙️ 系統設定</h5>
-                <div class="row">
-                  <div class="col-md-6 border-end">
-                    <h6>🏢 場地名單</h6>
-                    <div class="input-group mb-2">
-                      <input
-                        type="text"
-                        id="newRoomName"
-                        class="form-control"
-                        placeholder="名稱" />
-                      <button class="btn btn-success" onclick="addRoom()">
-                        新增
-                      </button>
-                    </div>
-                    <div id="roomAdminList" class="list-group"></div>
-                  </div>
-                  <div class="col-md-6">
-                    <p class="text-muted small mt-2">
-                      ※ 若需修改密碼或新增帳號，請至 Google Sheets 的 Users
-                      工作表處理。
-                    </p>
-                  </div>
-                </div>
+                <h5 class="text-warning mb-4">⚙️ 系統設定說明</h5>
+                <p class="text-muted small mb-0">
+                  ※ 為確保排程資料完整性，本介面已關閉場地刪除功能。<br>
+                  若需 <strong>「新增/停用場地」</strong>、<strong>「新增帳號」</strong> 或 <strong>「修改密碼」</strong>，請統一至後台 <strong>Google Sheets 試算表</strong> 中處理。
+                </p>
               </div>
 
               <div class="card p-4 border-warning">
