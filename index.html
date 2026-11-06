@@ -181,19 +181,14 @@
                 <div class="row mb-3">
                   <div class="col">
                     <label class="form-label">開始時間</label>
-                    <input
-                      type="time"
-                      class="form-control"
+                    <select
+                      class="form-select"
                       id="startTime"
-                      required />
+                      required></select>
                   </div>
                   <div class="col">
                     <label class="form-label">結束時間</label>
-                    <input
-                      type="time"
-                      class="form-control"
-                      id="endTime"
-                      required />
+                    <select class="form-select" id="endTime" required></select>
                   </div>
                 </div>
 
@@ -417,11 +412,29 @@
         const today = new Date().toISOString().split("T")[0];
         document.getElementById("date").value = today;
         document.getElementById("date").setAttribute("min", today);
+
+        initTimeSelects(); // 👈 加入這行，初始化整點時間下拉選單
         initTimeline();
         updateRoomDropdown();
         loadBookings();
       }
 
+      // 👇 在 initSystem() 函式下方，貼上這個全新的函式 👇
+      function initTimeSelects() {
+        let timeOptions = "";
+        // 根據 START_HOUR (8) 到 END_HOUR (20) 產生整點選項
+        for (let i = START_HOUR; i <= END_HOUR; i++) {
+          let hourStr = (i < 10 ? "0" + i : i) + ":00";
+          timeOptions += `<option value="${hourStr}">${hourStr}</option>`;
+        }
+        document.getElementById("startTime").innerHTML = timeOptions;
+        document.getElementById("endTime").innerHTML = timeOptions;
+
+        // 預設將結束時間往後調一小時
+        if (document.getElementById("endTime").options.length > 1) {
+          document.getElementById("endTime").selectedIndex = 1;
+        }
+      }
       async function callGAS(data) {
         try {
           const res = await fetch(GAS_URL, {
