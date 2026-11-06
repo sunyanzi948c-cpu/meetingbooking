@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>李氏全人健康中心 場地租借系統</title>
+    <title>場地預約管理系統</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet" />
@@ -92,7 +92,6 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
       }
 
-      /* 強制登入畫面樣式 */
       #fullLoginScreen {
         position: fixed;
         top: 0;
@@ -105,7 +104,6 @@
         justify-content: center;
         align-items: center;
       }
-      /* 預設隱藏管理者區塊 */
       .admin-only {
         display: none !important;
       }
@@ -115,7 +113,7 @@
     <!-- 🟢 強制登入畫面 -->
     <div id="fullLoginScreen">
       <div class="card p-4 shadow-lg" style="width: 350px">
-        <h4 class="text-center mb-4">🏢 李氏全人健康中心 場地租借系統</h4>
+        <h4 class="text-center mb-4">🏢 場地管理系統</h4>
         <div class="mb-3">
           <input
             type="text"
@@ -143,10 +141,10 @@
       </div>
     </div>
 
-    <!-- 🟢 系統主畫面 (預設隱藏，登入後顯示) -->
+    <!-- 🟢 系統主畫面 -->
     <div id="mainApp" style="display: none">
       <nav class="navbar navbar-dark bg-dark px-4">
-        <span class="navbar-brand">🏢 李氏全人健康中心</span>
+        <span class="navbar-brand">🏢 場地管理系統</span>
         <div>
           <span id="currentUserLabel" class="text-white me-3"></span>
           <button class="btn btn-outline-light btn-sm" onclick="logout()">
@@ -168,7 +166,7 @@
               <h5 class="mb-3">🆕 提交預約申請</h5>
               <form id="bookingForm">
                 <div class="mb-3">
-                  <label class="form-label">選擇會議室</label>
+                  <label class="form-label">選擇場地</label>
                   <select class="form-select" id="room" required></select>
                 </div>
                 <div class="mb-3">
@@ -198,52 +196,82 @@
                       required />
                   </div>
                 </div>
-                <div class="mb-3">
-                  <label class="form-label">申請人資訊</label>
+
+                <!-- 👇 全新的申請人資訊區塊 👇 -->
+                <div class="mb-3 border rounded p-3 bg-light">
+                  <label class="form-label fw-bold text-primary mb-3"
+                    >👤 申請人資訊</label
+                  >
                   <div class="row g-2 mb-2">
                     <div class="col-6">
+                      <label class="form-label small text-muted mb-1"
+                        >身份</label
+                      >
+                      <!-- 自動帶入帳號且不可修改 -->
                       <input
                         type="text"
-                        class="form-control"
-                        id="unit"
-                        placeholder="單位"
+                        class="form-control form-control-sm bg-secondary text-white border-0"
+                        id="identity"
+                        readonly />
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label small text-muted mb-1"
+                        >申請人</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control form-control-sm"
+                        id="applicant"
+                        placeholder="請填寫姓名"
+                        required />
+                    </div>
+                  </div>
+                  <div class="row g-2 mb-2">
+                    <div class="col-6">
+                      <label class="form-label small text-muted mb-1"
+                        >聯絡電話</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control form-control-sm"
+                        id="phone"
+                        placeholder="電話/分機"
                         required />
                     </div>
                     <div class="col-6">
+                      <label class="form-label small text-muted mb-1"
+                        >聯絡信箱</label
+                      >
                       <input
-                        type="text"
-                        class="form-control"
-                        id="title"
-                        placeholder="級職"
+                        type="email"
+                        class="form-control form-control-sm"
+                        id="email"
+                        placeholder="信箱"
                         required />
                     </div>
                   </div>
                   <div class="row g-2">
-                    <div class="col-6">
+                    <div class="col-12">
+                      <label class="form-label small text-muted mb-1"
+                        >備註 (最多 25 字)</label
+                      >
                       <input
                         type="text"
-                        class="form-control"
-                        id="user"
-                        placeholder="姓名"
-                        required />
-                    </div>
-                    <div class="col-6">
-                      <input
-                        type="text"
-                        class="form-control"
-                        id="phone"
-                        placeholder="分機"
-                        required />
+                        class="form-control form-control-sm"
+                        id="remarks"
+                        maxlength="25"
+                        placeholder="如有其他需求請簡述..." />
                     </div>
                   </div>
                 </div>
+                <!-- 👆 全新的申請人資訊區塊結束 👆 -->
 
                 <button type="submit" class="btn btn-primary w-100">
                   送出預約申請
                 </button>
               </form>
 
-              <!-- 👇 請在此處加入這段聯絡資訊區塊 👇 -->
+              <!-- 聯絡資訊區塊 -->
               <div class="mt-4 border-top pt-3">
                 <h6 class="text-secondary mb-2">📞 聯絡資訊</h6>
                 <p class="small text-muted mb-0" style="line-height: 1.6">
@@ -252,7 +280,6 @@
                   電話：08-7363766 分機 317
                 </p>
               </div>
-              <!-- 👆 加入到這裡為止 👆 -->
             </div>
           </div>
 
@@ -266,13 +293,12 @@
               </div>
             </div>
 
-            <!-- 管理者專屬區塊 (自動切換顯示) -->
             <div id="adminSections" class="admin-only">
               <div class="card p-4 border-warning mb-4">
                 <h5 class="text-warning mb-4">⚙️ 系統設定</h5>
                 <div class="row">
                   <div class="col-md-6 border-end">
-                    <h6>🏢 會議室名單</h6>
+                    <h6>🏢 場地名單</h6>
                     <div class="input-group mb-2">
                       <input
                         type="text"
@@ -286,7 +312,6 @@
                     <div id="roomAdminList" class="list-group"></div>
                   </div>
                   <div class="col-md-6">
-                    <!-- 密碼修改已移除，建議直接由 Google Sheets 後台修改 -->
                     <p class="text-muted small mt-2">
                       ※ 若需修改密碼或新增帳號，請至 Google Sheets 的 Users
                       工作表處理。
@@ -306,9 +331,9 @@
     </div>
 
     <script>
-      // ⚠️ 替換為你的 Google Apps Script 網頁應用程式 URL
+      // ⚠️ 請確認下方引號內是您最新的 GAS 網頁應用程式 URL
       const GAS_URL =
-        "https://script.google.com/macros/s/AKfycbxqvq5OXKFHysKK3H7rPVQPr-JbBjSxCCUnXWQiYM9kw4xg_ojr9d0z2PWvzn2tyx9jHw/exec";
+        "https://script.google.com/macros/s/AKfycbweLep7f2AV_dVWS685EXJx4booJjmegWRhUO_qcftdNRzn32eMWX7Dd2e-77ij-Prvqw/exec";
 
       const START_HOUR = 8,
         END_HOUR = 20,
@@ -319,17 +344,15 @@
         checkLoginStatus();
       };
 
-      // --- 登入與權限控制 ---
       function checkLoginStatus() {
         const token = localStorage.getItem("auth_token");
         const username = localStorage.getItem("username");
 
         if (token && username) {
-          // 已登入狀態，顯示主系統並初始化
           document.getElementById("fullLoginScreen").style.display = "none";
           document.getElementById("mainApp").style.display = "block";
 
-          IS_ADMIN = username === "admin"; // 判斷是否為管理者
+          IS_ADMIN = username === "admin";
           document.getElementById("currentUserLabel").innerText = IS_ADMIN
             ? "👨‍💼 管理者模式 (admin)"
             : `👤 使用者 (${username})`;
@@ -342,12 +365,12 @@
             document
               .getElementById("adminSections")
               .classList.add("admin-only");
-            document.getElementById("user").value = username; // 自動帶入申請人姓名
           }
+          // 自動帶入登入帳號至「身份」欄位
+          document.getElementById("identity").value = username;
 
           initSystem();
         } else {
-          // 未登入狀態，顯示登入畫面
           document.getElementById("fullLoginScreen").style.display = "flex";
           document.getElementById("mainApp").style.display = "none";
         }
@@ -374,12 +397,11 @@
         if (result.status === "success") {
           localStorage.setItem("auth_token", result.token);
           localStorage.setItem("username", user);
-          checkLoginStatus(); // 刷新 UI 進入系統
+          checkLoginStatus();
         } else {
           msg.innerText = "帳號或密碼錯誤";
           msg.style.display = "block";
         }
-
         btn.disabled = false;
         btn.innerText = "系統登入";
       }
@@ -388,10 +410,9 @@
         localStorage.clear();
         document.getElementById("loginUser").value = "";
         document.getElementById("loginPass").value = "";
-        checkLoginStatus(); // 刷新 UI 回到登入頁
+        checkLoginStatus();
       }
 
-      // --- 系統初始化與 GAS API 呼叫 ---
       function initSystem() {
         const today = new Date().toISOString().split("T")[0];
         document.getElementById("date").value = today;
@@ -410,12 +431,10 @@
           });
           return await res.json();
         } catch (e) {
-          console.error("API Error:", e);
           return { status: "error", message: "網路連線異常" };
         }
       }
 
-      // --- 會議室管理 ---
       async function updateRoomDropdown() {
         const result = await callGAS({ action: "get_rooms" });
         const rooms = result.data || [];
@@ -457,7 +476,6 @@
         }
       }
 
-      // --- 預約排程看板 ---
       function initTimeline() {
         const h = document.getElementById("timelineHeader");
         h.innerHTML = '<div style="min-width:150px"></div>';
@@ -494,13 +512,14 @@
 
               bar.style.left = `${(s - START_HOUR) * PX + 150}px`;
               bar.style.width = `${(e - s) * PX}px`;
-              bar.innerText = `${booking.user_name} (${booking.start_time}-${booking.end_time})`;
-              bar.title = `單位：${booking.unit}\n級職：${booking.title}\n姓名：${booking.user_name}\n分機：${booking.phone}`;
+              bar.innerText = `${booking.applicant} (${booking.start_time}-${booking.end_time})`;
+              // 游標懸停顯示詳細資訊
+              bar.title = `身份：${booking.identity}\n申請人：${booking.applicant}\n電話：${booking.phone}\n信箱：${booking.email}\n備註：${booking.remarks || "無"}`;
 
               if (IS_ADMIN) {
                 bar.style.cursor = "pointer";
                 bar.onclick = () =>
-                  deleteBooking(booking.id, booking.user_name);
+                  deleteBooking(booking.id, booking.applicant);
               }
               row.appendChild(bar);
             });
@@ -522,7 +541,6 @@
         }
       }
 
-      // --- 審核功能 ---
       function renderApproval(pendings) {
         const list = document.getElementById("approvalList");
         list.innerHTML = pendings.length
@@ -537,7 +555,8 @@
                 <div>
                   <span class="badge bg-warning text-dark mb-1">${item.room_name} (${item.booking_date})</span>
                   <h6 class="mb-0">${item.start_time} - ${item.end_time}</h6>
-                  <small class="text-primary">${item.unit} ${item.title} ${item.user_name}</small> | <small class="text-danger">分機：${item.phone}</small>
+                  <small class="text-primary">${item.identity} | ${item.applicant}</small> | <small class="text-danger">電話：${item.phone}</small><br>
+                  <small class="text-muted">信箱：${item.email} | 備註：${item.remarks || "無"}</small>
                 </div>
                 <div>
                   <button class="btn btn-success btn-sm me-1" onclick="handleApproval('${item.id}', '已核准')">准許</button>
@@ -558,7 +577,6 @@
         loadBookings();
       }
 
-      // --- 提交申請 ---
       document.getElementById("bookingForm").onsubmit = async (e) => {
         e.preventDefault();
         if (
@@ -579,23 +597,23 @@
           date: document.getElementById("date").value,
           startTime: document.getElementById("startTime").value,
           endTime: document.getElementById("endTime").value,
-          user: document.getElementById("user").value,
-          unit: document.getElementById("unit").value,
-          title: document.getElementById("title").value,
+          identity: document.getElementById("identity").value,
+          applicant: document.getElementById("applicant").value,
           phone: document.getElementById("phone").value,
-          notifyEmail: "leeseducationcenter@gmail.com,sunyanzi948c@gmail.com", // 直接寫入固定的通知信箱
+          email: document.getElementById("email").value,
+          remarks: document.getElementById("remarks").value,
+          notifyEmail: "leeseducationcenter@gmail.com",
         };
 
         const result = await callGAS(data);
         alert(result.message);
 
         if (result.status === "success") {
+          const currentIdentity = document.getElementById("identity").value;
           e.target.reset();
           const today = new Date().toISOString().split("T")[0];
           document.getElementById("date").value = today;
-          if (!IS_ADMIN)
-            document.getElementById("user").value =
-              localStorage.getItem("username"); // 恢復預設姓名
+          document.getElementById("identity").value = currentIdentity; // 恢復已登入的身分字串
         }
 
         submitBtn.disabled = false;
