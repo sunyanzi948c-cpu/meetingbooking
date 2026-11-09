@@ -121,7 +121,13 @@
     <!-- 🟢 強制登入畫面 -->
     <div id="fullLoginScreen">
       <div class="card p-4 shadow-lg" style="width: 350px">
-        <h4 class="text-center mb-4">🏢 場地管理系統</h4>
+        <div class="text-center mb-3">
+          <img
+            src="logo.png"
+            alt="李氏聯合診所"
+            style="max-width: 100%; height: auto; border-radius: 8px" />
+        </div>
+        <h4 class="text-center mb-4 fw-bold text-dark">🏢 場地管理系統</h4>
         <div class="mb-3">
           <input
             type="text"
@@ -152,7 +158,20 @@
     <!-- 🟢 系統主畫面 -->
     <div id="mainApp" style="display: none">
       <nav class="navbar navbar-dark bg-dark px-4">
-        <span class="navbar-brand">🏢 場地管理系統</span>
+        <span class="navbar-brand d-flex align-items-center">
+          <!-- 在文字左側加入縮小版的 Logo，並設定一點白色背景與圓角讓 Logo 更突出 -->
+          <img
+            src="logo.png"
+            alt="Logo"
+            style="
+              height: 35px;
+              border-radius: 4px;
+              margin-right: 12px;
+              background: #fff;
+              padding: 2px;
+            " />
+          <span>🏢 場地管理系統</span>
+        </span>
         <div>
           <span id="currentUserLabel" class="text-white me-3"></span>
           <button class="btn btn-outline-light btn-sm" onclick="logout()">
