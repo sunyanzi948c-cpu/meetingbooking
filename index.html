@@ -700,21 +700,34 @@
                   <small class="text-muted">信箱：${item.email} | 備註：${item.remarks || "無"}</small>
                 </div>
                 <div>
-                  <button class="btn btn-success btn-sm me-1" onclick="handleApproval('${item.id}', '已核准')">准許</button>
-                  <button class="btn btn-outline-danger btn-sm" onclick="handleApproval('${item.id}', '已退回')">拒絕</button>
+                  <button class="btn btn-success btn-sm me-1" onclick="handleApproval('${item.id}', '已核准', this)">准許</button>
+                  <button class="btn btn-outline-danger btn-sm" onclick="handleApproval('${item.id}', '已退回', this)">拒絕</button>
                 </div>`;
           list.appendChild(div);
         });
       }
 
-      async function handleApproval(id, statusAction) {
+      async function handleApproval(id, statusAction, btnElement) {
+        // 🟢 點擊後立刻將按鈕反灰並顯示處理中，防止重複點擊
+        if (btnElement) {
+          btnElement.disabled = true;
+          btnElement.innerText = "處理中...";
+          // 順便把旁邊的按鈕也一起停用，避免同時點准許又點拒絕
+          Array.from(btnElement.parentElement.children).forEach(
+            (btn) => (btn.disabled = true),
+          );
+        }
+
         const res = await callGAS({
           action: "approve_booking",
           id: id,
           status: statusAction,
           token: localStorage.getItem("auth_token"),
         });
+
         if (res.status === "error") alert(res.message);
+
+        // 重新載入排程，畫面更新後「處理中」的按鈕就會自然消失了
         loadBookings();
       }
 
