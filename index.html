@@ -280,7 +280,15 @@
                   <strong>莊小姐</strong><br />
                   電話：08-7363766 分機 317<br />
                   <!-- 👇 新增這行連結 👇 -->
-                  <a href="#" onclick="showInstructionManually(); return false;" class="d-inline-block mt-2 text-decoration-none fw-bold">👉 點此觀看「場地租借說明」</a>
+                  <a
+                    href="#"
+                    onclick="
+                      showInstructionManually();
+                      return false;
+                    "
+                    class="d-inline-block mt-2 text-decoration-none fw-bold"
+                    >👉 點此觀看「場地租借說明」</a
+                  >
                 </p>
               </div>
             </div>
@@ -333,11 +341,27 @@
             <h5 class="modal-title fw-bold mx-auto">📋 場地租借說明</h5>
           </div>
           <div class="modal-body text-center p-0 bg-light">
-            <img
-              src="場地租借說明資訊圖表.png"
-              alt="場地租借說明"
-              class="img-fluid"
-              style="width: 100%; max-height: 70vh; object-fit: contain" />
+            <!-- 加入 <a> 標籤，點擊圖片會在新分頁開啟原始圖片 -->
+            <a
+              href="場地租借說明資訊圖表.png"
+              target="_blank"
+              title="點擊放大觀看原圖">
+              <!-- 加入 cursor: zoom-in 讓滑鼠移過去時顯示放大鏡圖示 -->
+              <img
+                src="場地租借說明資訊圖表.png"
+                alt="場地租借說明"
+                class="img-fluid"
+                style="
+                  width: 100%;
+                  max-height: 70vh;
+                  object-fit: contain;
+                  cursor: zoom-in;
+                " />
+            </a>
+          </div>
+          <!-- 在圖片下方加一行提示小字 -->
+          <div class="text-center p-1 bg-light text-muted small">
+            ※ 電腦版若字體過小，可點擊圖片放大檢視
           </div>
           <div class="modal-footer justify-content-center bg-white">
             <button
@@ -439,14 +463,14 @@
 
       // 🟢 手動點擊觀看說明圖 (無須倒數直接可關閉)
       function showInstructionManually() {
-          const btn = document.getElementById('closeInstructionBtn');
-          btn.disabled = false;
-          btn.classList.remove('btn-secondary');
-          btn.classList.add('btn-success');
-          btn.innerText = '關閉說明';
-          btn.onclick = () => instructionModalInstance.hide();
-          
-          instructionModalInstance.show();
+        const btn = document.getElementById("closeInstructionBtn");
+        btn.disabled = false;
+        btn.classList.remove("btn-secondary");
+        btn.classList.add("btn-success");
+        btn.innerText = "關閉說明";
+        btn.onclick = () => instructionModalInstance.hide();
+
+        instructionModalInstance.show();
       }
 
       function checkLoginStatus() {
