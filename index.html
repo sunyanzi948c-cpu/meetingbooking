@@ -278,7 +278,9 @@
                 <p class="small text-muted mb-0" style="line-height: 1.6">
                   若有系統操作或審核相關問題，請洽：<br />
                   <strong>莊小姐</strong><br />
-                  電話：08-7363766 分機 317
+                  電話：08-7363766 分機 317<br />
+                  <!-- 👇 新增這行連結 👇 -->
+                  <a href="#" onclick="showInstructionManually(); return false;" class="d-inline-block mt-2 text-decoration-none fw-bold">👉 點此觀看「場地租借說明」</a>
                 </p>
               </div>
             </div>
@@ -433,6 +435,18 @@
             btn.onclick = () => instructionModalInstance.hide();
           }
         }, 1000);
+      }
+
+      // 🟢 手動點擊觀看說明圖 (無須倒數直接可關閉)
+      function showInstructionManually() {
+          const btn = document.getElementById('closeInstructionBtn');
+          btn.disabled = false;
+          btn.classList.remove('btn-secondary');
+          btn.classList.add('btn-success');
+          btn.innerText = '關閉說明';
+          btn.onclick = () => instructionModalInstance.hide();
+          
+          instructionModalInstance.show();
       }
 
       function checkLoginStatus() {
