@@ -435,7 +435,7 @@
     <script>
       // ⚠️ 請確認下方引號內是您最新的 GAS 網頁應用程式 URL
       const GAS_URL =
-        "https://script.google.com/macros/s/AKfycbxGBak_UxKvZexPtuJ8ggQZhC57YxCkPopo4szgK8--7-x1N6QCnOG_Sh_gj3gkeEH9tQ/exec";
+        "https://script.google.com/macros/s/AKfycbzXV3id-cWBXHO5b65hfSCE3Bb-HSrfCgwH2G46AabMkQ9RZ1tJHjk2FV2SIgVQRSlj-w/exec";
 
       const START_HOUR = 8,
         END_HOUR = 20,
@@ -623,6 +623,8 @@
         const result = await callGAS({
           action: "get_bookings_and_rooms",
           date: date,
+          token: localStorage.getItem("auth_token"),
+          user: localStorage.getItem("username"),
         });
         const bookings = result.bookings || [];
         const rooms = result.rooms || [];
