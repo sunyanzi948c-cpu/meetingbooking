@@ -158,9 +158,9 @@
           <div
             class="small text-muted"
             style="line-height: 1.6; text-align: justify">
-            (1)本系統帳號及密碼由場地管理單位統一提供，請使用取得之帳號密碼登入，恕不開放自行註冊。如有登入相關問題，請洽管理人員。<br /><br />
-            (2)電話：08-7363766 分機 317 (莊小姐)<br />
-            email: Leeseducationcenter@gmail.com
+            ※本系統帳號及密碼由場地管理單位統一提供，請使用取得之帳號密碼登入，恕不開放自行註冊。如有登入相關問題，請洽管理人員。<br /><br />
+            ※電話：08-7363766 分機 317 (莊小姐)<br />
+            email: leeseducationcenter@gmail.com
           </div>
         </div>
         <!-- 👆 新增結束 👆 -->
@@ -283,6 +283,26 @@
                         required />
                     </div>
                   </div>
+
+                  <!-- 👇 新增：使用人數 👇 -->
+                  <div class="row g-2 mb-2">
+                    <div class="col-12">
+                      <label class="form-label small text-muted mb-1"
+                        >預計使用人數</label
+                      >
+                      <select
+                        class="form-select form-select-sm"
+                        id="peopleCount"
+                        required>
+                        <option value="1-10人">1-10人</option>
+                        <option value="11-20人">11-20人</option>
+                        <option value="21-30人">21-30人</option>
+                        <option value="30人以上">30人以上</option>
+                      </select>
+                    </div>
+                  </div>
+                  <!-- 👆 新增結束 👆 -->
+
                   <div class="row g-2">
                     <div class="col-12">
                       <label class="form-label small text-muted mb-1"
@@ -308,8 +328,8 @@
                 <h6 class="text-secondary mb-2">📞 聯絡資訊</h6>
                 <p class="small text-muted mb-0" style="line-height: 1.6">
                   若有系統操作或審核相關問題，請洽：<br />
-                  <strong>莊小姐</strong><br />
-                  電話：08-7363766 分機 317<br /><br />
+                  <br />
+                  電話：08-7363766 分機 317<strong>(莊小姐)</strong><br />
                   信箱：leeseducationcenter@gmail.com<br />
 
                   <a
@@ -448,7 +468,7 @@
     <script>
       // ⚠️ 請確認下方引號內是您最新的 GAS 網頁應用程式 URL
       const GAS_URL =
-        "https://script.google.com/macros/s/AKfycbzXV3id-cWBXHO5b65hfSCE3Bb-HSrfCgwH2G46AabMkQ9RZ1tJHjk2FV2SIgVQRSlj-w/exec";
+        "https://script.google.com/macros/s/AKfycbwVhdgFBirZfv3tHLrB1oVp2XwSmkk34moElJXqp3ErBxZAhDBYSJRUg4qfNNBCZbQLHQ/exec";
 
       const START_HOUR = 8,
         END_HOUR = 20,
@@ -680,6 +700,8 @@
               <p class="mb-1"><strong>日期：</strong> ${booking.booking_date}</p>
               <p class="mb-1"><strong>時間：</strong> ${booking.start_time} ~ ${booking.end_time}</p>
               <hr class="my-2">
+              <p class="mb-1"><strong>預計人數：</strong> ${booking.peopleCount}</p>
+              <hr class="my-2">
               <p class="mb-1"><strong>身份：</strong> ${booking.identity}</p>
               <p class="mb-1"><strong>申請人：</strong> ${booking.applicant}</p>
               <p class="mb-1"><strong>聯絡電話：</strong> ${booking.phone}</p>
@@ -789,6 +811,7 @@
           applicant: document.getElementById("applicant").value,
           phone: document.getElementById("phone").value,
           email: document.getElementById("email").value,
+          peopleCount: document.getElementById("peopleCount").value, // 👇 加入這一行
           remarks: document.getElementById("remarks").value,
           notifyEmail: "leeseducationcenter@gmail.com,sunyanzi948c@gmail.com",
         };
