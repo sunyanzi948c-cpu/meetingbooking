@@ -474,7 +474,7 @@
     <script>
       // ⚠️ 請確認下方引號內是您最新的 GAS 網頁應用程式 URL
       const GAS_URL =
-        "https://script.google.com/macros/s/AKfycbwVhdgFBirZfv3tHLrB1oVp2XwSmkk34moElJXqp3ErBxZAhDBYSJRUg4qfNNBCZbQLHQ/exec";
+        "https://script.google.com/macros/s/AKfycbxsjvn9xyZLMjPg5s-zoqbpzM3Q49vZfuzSfRMxzEKZbmEOk-rJvFhyjTbZ5RwAGbrizQ/exec";
 
       const START_HOUR = 8,
         END_HOUR = 20,
@@ -589,12 +589,12 @@
           localStorage.setItem("username", user);
           checkLoginStatus();
         } else {
-          msg.innerText = "帳號或密碼錯誤";
+          // 👇 讓畫面顯示後端帶來的鎖定秒數或剩餘次數 👇
+          msg.innerText = result.message || "帳號或密碼錯誤";
           msg.style.display = "block";
         }
         btn.disabled = false;
         btn.innerText = "系統登入";
-      }
 
       function logout() {
         localStorage.clear();
